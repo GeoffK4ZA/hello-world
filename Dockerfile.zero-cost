@@ -1,0 +1,46 @@
+# Digital Geoff - Zero Cost Edition
+#
+# Optimized for Oracle Cloud Always Free ARM instances
+# Multi-stage build for smaller image size
+
+FROM python:3.12-slim as builder
+
+WORKDIR /app
+
+# Install build dependencies
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    build-essential \
+    && rm -rf /var/lib/apt/lists/*
+
+# Install Python dependencies
+COPY requirements.zero-cost.txt .
+RUN pip install --no-cache-dir --user -r requirements.zero-cost.txt
+
+# Production image
+FROM python:3.12-slim
+
+WORKDIR /app
+
+# Install runtime dependencies
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    curl \
+    && rm -rf /var/lib/apt/lists/*
+
+# Copy installed packages from builder
+COPY --from=builder /root/.local /root/.local
+ENV PATH=/root/.local/bin:$PATH
+
+# Copy application code
+COPY src/ ./src/
+COPY DIGITAL_GEOFF_SYSTEM.md .
+
+# Create data directories
+RUN mkdir -p /data/sqlite /data/chroma /data/knowledge /app/logs
+
+# Health check
+HEALTHCHECK --interval=30s --timeout=10s --start-period=5s --retries=3 \
+    CMD curl -f http://localhost:8000/health || exit 1
+
+# Run the application
+EXPOSE 8000
+CMD ["python", "-m", "src.agent.main", "--run"]
