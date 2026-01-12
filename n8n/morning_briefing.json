@@ -1,0 +1,110 @@
+{
+  "name": "Digital Geoff - Morning Briefing",
+  "nodes": [
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "cronExpression",
+              "expression": "30 6 * * 1-5"
+            }
+          ]
+        }
+      },
+      "id": "trigger",
+      "name": "Daily 6:30 AM (Weekdays)",
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.1,
+      "position": [250, 300]
+    },
+    {
+      "parameters": {
+        "url": "={{$env.DIGITAL_GEOFF_URL}}/api/query",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "{\n  \"query\": \"Generate my morning briefing. Include: 1) Today's calendar with meeting prep needs, 2) Overdue and due-today Asana tasks, 3) Any important Slack/Teams messages overnight, 4) My priority stack for today.\"\n}",
+        "options": {}
+      },
+      "id": "query-agent",
+      "name": "Query Digital Geoff",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.1,
+      "position": [450, 300],
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "1",
+          "name": "Digital Geoff API"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "fromEmail": "={{$env.NOTIFICATION_EMAIL}}",
+        "toEmail": "={{$env.USER_EMAIL}}",
+        "subject": "☀️ Morning Briefing - {{$now.format('dddd, MMMM D')}}",
+        "emailType": "text",
+        "message": "={{$json.response}}"
+      },
+      "id": "send-email",
+      "name": "Send Email Briefing",
+      "type": "n8n-nodes-base.emailSend",
+      "typeVersion": 2.1,
+      "position": [650, 200]
+    },
+    {
+      "parameters": {
+        "authentication": "oAuth2",
+        "resource": "message",
+        "operation": "post",
+        "channel": "={{$env.SLACK_DM_CHANNEL}}",
+        "text": "={{$json.response}}"
+      },
+      "id": "send-slack",
+      "name": "Send Slack DM",
+      "type": "n8n-nodes-base.slack",
+      "typeVersion": 2.1,
+      "position": [650, 400],
+      "credentials": {
+        "slackOAuth2Api": {
+          "id": "2",
+          "name": "Slack Account"
+        }
+      }
+    }
+  ],
+  "connections": {
+    "Daily 6:30 AM (Weekdays)": {
+      "main": [
+        [
+          {
+            "node": "Query Digital Geoff",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Query Digital Geoff": {
+      "main": [
+        [
+          {
+            "node": "Send Email Briefing",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Send Slack DM",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1"
+  }
+}
