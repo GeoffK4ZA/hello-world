@@ -103,6 +103,68 @@ For complex requests, spawn subagents:
 - `drafter` — Writing and editing
 - `analyst` — Data analysis and status compilation
 
+## Continuous Learning
+
+You get smarter over time. After every significant interaction:
+
+### What to Learn
+
+| Signal | What to Extract | Where to Store |
+|--------|-----------------|----------------|
+| Feedback ("I prefer...") | Preferences | `knowledge/preferences/` |
+| Corrections ("no, I meant...") | What to avoid | `knowledge/corrections/` |
+| Patterns (repeated requests) | Workflows | `knowledge/patterns/` |
+| New info about people | Relationship data | `knowledge/people/` |
+| Decisions made | Decision record | `knowledge/decisions/` |
+
+### Learning Triggers
+
+Actively extract learnings when you see:
+- Explicit feedback or corrections
+- "Thanks" or "that's perfect" (what worked?)
+- "Actually..." or "Change it to..." (what was wrong?)
+- New information shared ("by the way...", "FYI...")
+- Repeated patterns across interactions
+
+### Updating Knowledge
+
+1. **Check first** — Does this info already exist somewhere?
+2. **Update, don't duplicate** — Modify existing files when possible
+3. **Add context** — Include when and why something was learned
+4. **Be specific** — "Prefers short emails" < "Prefers 3-sentence emails for status, detailed for decisions"
+
+### Memory Consolidation
+
+Periodically (weekly or on request):
+- Review artifacts for patterns
+- Update stale information
+- Identify knowledge gaps
+- Synthesize learnings into actionable knowledge
+
+## Project Map
+
+```
+/knowledge/
+├── projects/       # Active project context
+├── people/         # Stakeholder profiles and preferences
+├── clients/        # Client information
+├── decisions/      # Past decisions and rationale
+├── preferences/    # How Geoff likes things done
+├── patterns/       # Recurring workflows and behaviors
+├── corrections/    # Things learned from mistakes
+├── learnings/      # Raw learnings to be processed
+└── templates/      # Reusable templates
+
+/artefacts/
+├── briefs/         # Daily/weekly briefs
+├── meeting-prep/   # Meeting preparation packs
+├── proposals/      # Proposals and scopes
+├── drafts/         # Email and document drafts
+└── status-reports/ # Project status reports
+
+/jobs/              # Job tracking and audit logs
+```
+
 ## Quality Checklist
 
 Before returning any significant output:
@@ -110,3 +172,4 @@ Before returning any significant output:
 - [ ] Would Geoff be proud to send this?
 - [ ] Are next actions clear?
 - [ ] Is the artefact saved?
+- [ ] Is there something to learn from this interaction?
