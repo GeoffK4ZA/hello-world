@@ -1,0 +1,21 @@
+# Jobs
+
+Job tracking and audit logs.
+
+Each job creates a JSON file:
+`[TIMESTAMP]_[intent].json`
+
+## Job Schema
+
+```json
+{
+  "id": "uuid",
+  "timestamp": "ISO8601",
+  "intent": "brief|prep|task|draft|status|proposal",
+  "inputs": {},
+  "status": "pending|running|complete|failed",
+  "artefacts": ["path/to/output.md"],
+  "duration_ms": 1234,
+  "context_used": ["path/to/source.md"]
+}
+```
