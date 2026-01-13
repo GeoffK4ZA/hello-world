@@ -1,0 +1,58 @@
+{
+  "$schema": "https://claudecron.dev/schema.json",
+  "description": "Geoff OS Scheduled Tasks",
+
+  "schedules": [
+    {
+      "name": "morning-brief",
+      "description": "Generate daily operating brief",
+      "cron": "30 6 * * 1-5",
+      "timezone": "Africa/Johannesburg",
+      "command": "/brief",
+      "enabled": true,
+      "notification": {
+        "telegram": true,
+        "on_success": true,
+        "on_failure": true
+      }
+    },
+    {
+      "name": "weekly-consolidation",
+      "description": "Run memory consolidator every Monday",
+      "cron": "0 7 * * 1",
+      "timezone": "Africa/Johannesburg",
+      "prompt": "Run memory consolidation. Review artifacts from the past week, extract patterns, update knowledge base, and generate a consolidation report.",
+      "enabled": true,
+      "notification": {
+        "telegram": true
+      }
+    },
+    {
+      "name": "evening-summary",
+      "description": "End of day summary and tomorrow prep",
+      "cron": "0 17 * * 1-5",
+      "timezone": "Africa/Johannesburg",
+      "prompt": "Generate end of day summary: What was accomplished today? What's pending? What's the top priority for tomorrow? Save to artefacts/briefs/",
+      "enabled": false
+    },
+    {
+      "name": "stale-task-check",
+      "description": "Check for tasks that haven't been updated",
+      "cron": "0 9 * * 1-5",
+      "timezone": "Africa/Johannesburg",
+      "prompt": "Review /knowledge/tasks/active_tasks.md. Flag any tasks older than 3 days without updates. Suggest follow-ups or closures.",
+      "enabled": false
+    }
+  ],
+
+  "meeting_prep_trigger": {
+    "description": "Auto-trigger meeting prep before calendar events",
+    "enabled": false,
+    "lead_time_minutes": 120,
+    "calendar_source": "google-calendar",
+    "command": "/prep",
+    "notification": {
+      "telegram": true
+    }
+  }
+}

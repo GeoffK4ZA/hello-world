@@ -1,0 +1,85 @@
+{
+  "$schema": "https://code.claude.com/settings-schema.json",
+
+  "permissions": {
+    "allow": [
+      "Read",
+      "Write",
+      "Edit",
+      "Bash(git:*)",
+      "Bash(ls:*)",
+      "Bash(mkdir:*)",
+      "Glob",
+      "Grep",
+      "Skill",
+      "Task"
+    ],
+    "deny": []
+  },
+
+  "mcp": {
+    "servers": {
+      "filesystem": {
+        "command": "npx",
+        "args": ["-y", "@anthropic-ai/mcp-server-filesystem", "/home/user/hello-world"],
+        "description": "File system access for knowledge and artefacts"
+      },
+      "asana": {
+        "command": "npx",
+        "args": ["-y", "@anthropic-ai/mcp-server-asana"],
+        "env": {
+          "ASANA_ACCESS_TOKEN": "${ASANA_ACCESS_TOKEN}"
+        },
+        "description": "Asana task management",
+        "disabled": true
+      },
+      "google-calendar": {
+        "command": "npx",
+        "args": ["-y", "@anthropic-ai/mcp-server-google-calendar"],
+        "env": {
+          "GOOGLE_CREDENTIALS_PATH": "${GOOGLE_CREDENTIALS_PATH}"
+        },
+        "description": "Google Calendar access",
+        "disabled": true
+      },
+      "scheduler": {
+        "command": "npx",
+        "args": ["-y", "claudecron"],
+        "description": "Scheduled task execution",
+        "disabled": true
+      }
+    }
+  },
+
+  "hooks": {
+    "SessionStart": [
+      {
+        "matcher": "*",
+        "hooks": [
+          {
+            "type": "prompt",
+            "prompt": "Load today's context: Check /knowledge/tasks/active_tasks.md for pending work. Note any high-priority items. Be ready to assist."
+          }
+        ]
+      }
+    ],
+    "Stop": [
+      {
+        "matcher": "*",
+        "hooks": [
+          {
+            "type": "prompt",
+            "prompt": "Before finishing: Was there feedback, a correction, or new information in this interaction? If so, consider updating /knowledge/ appropriately. Was an artefact created that should be saved?"
+          }
+        ]
+      }
+    ]
+  },
+
+  "env": {
+    "GEOFF_OS_VERSION": "0.2.0",
+    "KNOWLEDGE_PATH": "/home/user/hello-world/knowledge",
+    "ARTEFACTS_PATH": "/home/user/hello-world/artefacts",
+    "JOBS_PATH": "/home/user/hello-world/jobs"
+  }
+}

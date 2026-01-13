@@ -1,0 +1,10 @@
+# Geoff OS Integration Requirements
+
+# Telegram Bot
+python-telegram-bot>=20.7
+
+# Async support
+asyncio-mqtt>=0.16.0  # Optional: for IoT integrations
+
+# Utilities
+python-dotenv>=1.0.0
