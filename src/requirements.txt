@@ -1,0 +1,14 @@
+# Geoff OS Phase 3 - Database Layer Requirements
+
+# Core (no external dependencies - uses Python stdlib)
+# - SQLite3 (built-in)
+# - pathlib (built-in)
+# - dataclasses (built-in)
+
+# Optional: Vector Search
+chromadb>=0.4.0  # Vector embeddings and semantic search
+
+# Optional: Better CLI
+rich>=13.0.0  # Rich terminal output (optional)
+
+# Note: Phase 2 requirements are in integrations/requirements.txt

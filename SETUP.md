@@ -312,9 +312,84 @@ Edit `integrations/scheduler/schedules.json` to adjust times/enable tasks.
 
 ---
 
-## Phase 5: Advanced Setup
+## Phase 5: Database Layer (Optional)
 
-### 5.1 Run Telegram Bot as Service (Linux)
+The database layer provides structured storage and semantic search for better context retrieval.
+
+### 5.1 Install Dependencies
+
+```bash
+cd /path/to/hello-world
+
+# Core (SQLite is built-in, no install needed)
+
+# Optional: Vector search for semantic retrieval
+pip install chromadb
+```
+
+### 5.2 Initialize Database
+
+```bash
+# Initialize SQLite database
+python -m src.cli init
+
+# Or with full indexing (includes vector embeddings)
+python -m src.cli init --full --vectors
+```
+
+This creates:
+- `data/geoff.db` — SQLite database with FTS5
+- `data/chroma/` — ChromaDB vector store (if enabled)
+
+### 5.3 Index Knowledge Base
+
+After adding new knowledge files, run:
+
+```bash
+# Quick sync (SQLite only)
+python src/indexer.py quick
+
+# Full index (SQLite + vectors)
+python src/indexer.py full
+```
+
+### 5.4 CLI Tools
+
+The database CLI provides several useful commands:
+
+```bash
+# Search knowledge base
+python -m src.cli search "project status"
+
+# Semantic search (requires chromadb)
+python -m src.cli search "project status" --semantic
+
+# Retrieve context for a query (RAG)
+python -m src.cli retrieve "meeting with Sarah"
+
+# View job history
+python -m src.cli jobs
+
+# Show statistics
+python -m src.cli stats
+
+# List entities by type
+python -m src.cli entities --type project
+```
+
+### 5.5 Watch Mode (Development)
+
+Keep the database synced as you edit files:
+
+```bash
+python src/indexer.py watch
+```
+
+---
+
+## Phase 6: Advanced Setup
+
+### 6.1 Run Telegram Bot as Service (Linux)
 
 Create systemd service:
 
@@ -353,7 +428,7 @@ Check status:
 sudo systemctl status geoff-telegram
 ```
 
-### 5.2 Run on macOS (launchd)
+### 6.2 Run on macOS (launchd)
 
 Create plist file:
 ```bash
@@ -428,6 +503,8 @@ launchctl load ~/Library/LaunchAgents/com.geoff.telegram.plist
 | Templates | `knowledge/templates/*.md` |
 | Outputs | `artefacts/` |
 | Config | `.claude/settings.json` |
+| Database | `data/geoff.db` |
+| Vectors | `data/chroma/` |
 
 ---
 
